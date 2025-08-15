@@ -10,9 +10,7 @@ interface CodeResultsProps {
 
 const CodeResults: React.FC<CodeResultsProps> = ({ html, css, onClose }) => {
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<"preview" | "html" | "css">(
-    "html"
-  );
+  const [activeTab, setActiveTab] = useState<"preview" | "html">("html");
 
   const handleCopyHTML = async () => {
     await navigator.clipboard.writeText(html);
@@ -69,7 +67,8 @@ const CodeResults: React.FC<CodeResultsProps> = ({ html, css, onClose }) => {
               <Code className="h-4 w-4" />
               <span>HTML</span>
             </button>
-            <button
+            {/* CSS tab commented out since we're only generating Tailwind code (embedded in HTML) */}
+            {/* <button
               onClick={() => setActiveTab("css")}
               className={`px-4 py-2 rounded text-sm font-medium transition-colors flex items-center space-x-2 ${
                 activeTab === "css"
@@ -79,7 +78,7 @@ const CodeResults: React.FC<CodeResultsProps> = ({ html, css, onClose }) => {
             >
               <Code className="h-4 w-4" />
               <span>CSS</span>
-            </button>
+            </button> */}
             <button
               onClick={() => setActiveTab("preview")}
               className={`px-4 py-2 rounded text-sm font-medium transition-colors flex items-center space-x-2 ${
@@ -121,19 +120,20 @@ const CodeResults: React.FC<CodeResultsProps> = ({ html, css, onClose }) => {
         >
           {activeTab === "html" && (
             <div className="relative">
-              <pre className="p-6 text-sm text-gray-700 bg-gray-50 overflow-x-auto">
+              <pre className="p-6 text-sm text-purple-600 bg-gray-50 overflow-x-auto font-mono">
                 <code>{html}</code>
               </pre>
             </div>
           )}
 
-          {activeTab === "css" && (
+          {/* CSS content commented out since we're only generating Tailwind code */}
+          {/* {activeTab === "css" && (
             <div className="relative">
               <pre className="p-6 text-sm text-gray-700 bg-gray-50 overflow-x-auto">
                 <code>{css}</code>
               </pre>
             </div>
-          )}
+          )} */}
 
           {activeTab === "preview" && (
             <div className="p-6">
