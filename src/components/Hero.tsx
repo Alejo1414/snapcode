@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Upload, Sparkles, ArrowRight, Eye, Code } from "lucide-react";
+import { useSession, signIn } from "next-auth/react";
 import ImageUpload from "./ImageUpload";
 import CodeResults from "./CodeResults";
 import LivePreview from "./LivePreview";
 
 const Hero: React.FC = () => {
+  const { status } = useSession();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [generatedCode, setGeneratedCode] = useState<{
@@ -52,6 +54,15 @@ const Hero: React.FC = () => {
 
       setProgress(70); // API call complete
 
+      // Handle authentication required
+      if (response.status === 401) {
+        setError("Please sign in to generate code");
+        setIsProcessing(false);
+        setProgress(0);
+        signIn("google", { callbackUrl: window.location.href });
+        return;
+      }
+
       const result = await response.json();
 
       if (result.success && result.data) {
@@ -81,6 +92,10 @@ const Hero: React.FC = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+  };
+
+  const handleSignInToGenerate = () => {
+    signIn("google", { callbackUrl: window.location.href });
   };
 
   return (
@@ -115,11 +130,29 @@ const Hero: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
               <button
-                onClick={selectedFile ? handleProcessImage : undefined}
-                disabled={!selectedFile || isProcessing}
-                className="group bg-indigo-600 text-white px-8 py-4 rounded-xl hover:bg-indigo-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={
+                  status !== "authenticated"
+                    ? handleSignInToGenerate
+                    : selectedFile
+                      ? handleProcessImage
+                      : undefined
+                }
+                disabled={
+                  status === "authenticated" && (!selectedFile || isProcessing)
+                }
+                className={`group px-8 py-4 rounded-xl transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl flex items-center space-x-2 ${
+                  status !== "authenticated"
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : "bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                }`}
               >
-                <span>{selectedFile ? "Generate Code" : "Try for Free"}</span>
+                <span>
+                  {status !== "authenticated"
+                    ? "Sign in to Generate"
+                    : selectedFile
+                      ? "Generate Code"
+                      : "Try for Free"}
+                </span>
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-2 transition-colors">

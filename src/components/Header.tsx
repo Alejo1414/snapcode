@@ -1,6 +1,11 @@
 import React from "react";
+import { useSession } from "next-auth/react";
+import SignInButton from "./SignInButton";
+import UserMenu from "./UserMenu";
 
 const Header: React.FC = () => {
+  const { status } = useSession();
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -53,9 +58,7 @@ const Header: React.FC = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium">
-              Login
-            </button>
+            {status === "authenticated" ? <UserMenu /> : <SignInButton />}
           </div>
         </div>
       </div>

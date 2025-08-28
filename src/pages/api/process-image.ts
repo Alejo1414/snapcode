@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm, Fields, Files } from "formidable";
 import fs from "fs";
 import sharp from "sharp";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../lib/auth";
 
 // Disable body parser for file uploads
 export const config = {
@@ -29,6 +31,12 @@ export default async function handler(
     return res
       .status(405)
       .json({ success: false, error: "Method not allowed" });
+  }
+
+  // Check for authenticated session
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return res.status(401).json({ success: false, error: "Unauthorized" });
   }
 
   try {

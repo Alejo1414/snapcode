@@ -24,6 +24,20 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Google OAuth Setup
+
+To obtain Google OAuth credentials for authentication:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the "Google+ API" or "Google Identity Services"
+4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
+5. Set the application type to "Web application"
+6. Add the following to **Authorized redirect URIs**:
+   - Development: `http://localhost:3000/api/auth/callback/google`
+   - Production: `https://yourdomain.com/api/auth/callback/google` (when deploying)
+7. Copy the Client ID and Client Secret to your `.env.local` file
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
